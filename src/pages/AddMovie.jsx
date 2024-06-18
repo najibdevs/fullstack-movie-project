@@ -1,64 +1,26 @@
-import { Button, Container, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 
 import NavigationBar from '../components/Navbar';
-import { useEffect, useState } from 'react';
 import { BASE_URL } from '../utils';
 
 const schema = z.object({
-    name: z
-        .string({
-            required_error: 'Name is required',
-        })
-        .min(1, { message: 'Name is required' }),
-    description: z
-        .string({
-            required_error: 'Description is required',
-        })
-        .min(1, { message: 'Description is required' }),
-    image: z
-        .string({
-            required_error: 'Image is required',
-        })
-        .min(1, { message: 'Image is required' })
-        .url({ message: 'Enter a valid image URL' }),
-    director: z
-        .string({
-            required_error: 'Director is required',
-        })
-        .min(1, { message: 'Director is required' }),
-    genre_id: z
-        .string({
-            required_error: 'Genre is required',
-        })
-        .min(1, { message: 'Genre is required' }),
-    release_date: z
-        .string({
-            required_error: 'Release date is required',
-        })
-        .min(1, { message: 'Release date is required' }),
-    rental_fee: z.string().min(1, { message: 'Rental fee is required' }),
+    name: z.string().min(1, 'Name is required'),
+    description: z.string().min(1, 'Description is required'),
+    image: z.string().url('Enter a valid image URL'),
+    director: z.string().min(1, 'Director is required'),
+    genre_id: z.string().min(1, 'Genre is required'),
+    release_date: z.string().min(1, 'Release date is required'),
+    rental_fee: z.string().min(1, 'Rental fee is required'),
 });
 
 const AddMovie = () => {
     const [genres, setGenres] = useState([]);
-
-    useEffect(() => {
-        fetch(`${BASE_URL}/genres`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setGenres(data);
-            })
-            .catch((err) => console.log(err));
-    }, []);
-
+    const navigate = useNavigate();
     const { control, handleSubmit, formState } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -72,187 +34,171 @@ const AddMovie = () => {
         },
     });
 
-    const onSubmit = async (values) => {
-        await fetch(`${BASE_URL}/movies`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                ...values,
-                rental_fee: Number(values.rental_fee),
-                genre_id: Number(values.genre_id),
-            }),
-        })
-            .then((res) => res.json())
-            .then((data) => console.log(data))
-            .catch((err) => console.log(err));
+    useEffect(() => {
+        fetchGenres();
+    }, []);
+
+    const fetchGenres = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/genres`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch genres');
+            }
+            const data = await response.json();
+            setGenres(data);
+        } catch (error) {
+            console.error('Error fetching genres:', error);
+        }
+    };
+
+    const onSubmit = async (data) => {
+        try {
+            const response = await fetch(`${BASE_URL}/movies`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...data,
+                    rental_fee: Number(data.rental_fee),
+                    genre_id: Number(data.genre_id),
+                }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to add movie');
+            }
+            const result = await response.json();
+            console.log('Movie added successfully:', result);
+            navigate('/'); // Redirect to home page after successful addition
+        } catch (error) {
+            console.error('Error adding movie:', error);
+        }
     };
 
     return (
-        <Container>
+        <>
             <NavigationBar />
+            <Container className="py-5">
+                <Row className="justify-content-center">
+                    <Col xs={12} md={8} lg={6}>
+                        <Form onSubmit={handleSubmit(onSubmit)} className="p-4 bg-light rounded shadow">
+                            <h2 className="mb-4 text-center">Add New Movie</h2>
 
-            <Form onSubmit={handleSubmit(onSubmit)}>
-                <Controller
-                    name="name"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter movie name"
-                                {...field}
+                            <Controller
+                                name="name"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="name">
+                                        <Form.Label>Name</Form.Label>
+                                        <Form.Control type="text" placeholder="Enter movie name" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="description"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="description">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                placeholder="Enter movie description"
-                                {...field}
+                            <Controller
+                                name="description"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="description">
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control as="textarea" rows={3} placeholder="Enter movie description" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="image"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="image">
-                            <Form.Label>Image URL</Form.Label>
-                            <Form.Control
-                                type="url"
-                                placeholder="Enter image URL"
-                                {...field}
+                            <Controller
+                                name="image"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="image">
+                                        <Form.Label>Image URL</Form.Label>
+                                        <Form.Control type="url" placeholder="Enter image URL" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="director"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="director">
-                            <Form.Label>Director</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter movie director"
-                                {...field}
+                            <Controller
+                                name="director"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="director">
+                                        <Form.Label>Director</Form.Label>
+                                        <Form.Control type="text" placeholder="Enter director name" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="genre_id"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="genre_id">
-                            <Form.Label>Genre</Form.Label>
-                            <Form.Select aria-label="Select movie genre" {...field}>
-                                <option>Select genre</option>
-                                {genres.map((genre) => (
-                                    <option key={genre.id} value={genre.id}>
-                                        {genre.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="release_date"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="release_date">
-                            <Form.Label>Release Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                placeholder="Select release date"
-                                {...field}
+                            <Controller
+                                name="genre_id"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="genre_id">
+                                        <Form.Label>Genre</Form.Label>
+                                        <Form.Select {...field}>
+                                            <option value="">Select a genre</option>
+                                            {genres.map((genre) => (
+                                                <option key={genre.id} value={genre.id}>
+                                                    {genre.name}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
-
-                <Controller
-                    name="rental_fee"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <Form.Group className="mb-3" controlId="rental_fee">
-                            <Form.Label>Rental Fee</Form.Label>
-                            <Form.Control
-                                type="number"
-                                placeholder="Enter rental fee"
-                                {...field}
+                            <Controller
+                                name="release_date"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="release_date">
+                                        <Form.Label>Release Date</Form.Label>
+                                        <Form.Control type="date" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
                             />
 
-                            {fieldState.invalid && (
-                                <Form.Text className="text-danger">
-                                    {fieldState.error.message}
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                    )}
-                />
+                            <Controller
+                                name="rental_fee"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <Form.Group className="mb-3" controlId="rental_fee">
+                                        <Form.Label>Rental Fee</Form.Label>
+                                        <Form.Control type="number" step="0.01" placeholder="Enter rental fee" {...field} />
+                                        {fieldState.error && (
+                                            <Form.Text className="text-danger">{fieldState.error.message}</Form.Text>
+                                        )}
+                                    </Form.Group>
+                                )}
+                            />
 
-                <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={formState.isSubmitting}
-                >
-                    {formState.isSubmitting ? 'Saving...' : 'Submit'}
-                </Button>
-            </Form>
-        </Container>
+                            <div className="d-grid">
+                                <Button variant="primary" type="submit" disabled={formState.isSubmitting}>
+                                    {formState.isSubmitting ? 'Saving...' : 'Add Movie'}
+                                </Button>
+                            </div>
+                        </Form>
+                    </Col>
+                </Row>
+            </Container>
+        </>
     );
 };
 

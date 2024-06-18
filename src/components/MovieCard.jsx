@@ -1,7 +1,6 @@
-// MovieCard.jsx
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
-import BookMovie from './BookMovie.jsx'; // Correct import with file extension
+import BookMovie from './BookMovie'; // Correct import without the .jsx extension for consistency
 
 function MovieCard(props) {
     const { title, id, director, image, rental_fee, is_rented } = props;

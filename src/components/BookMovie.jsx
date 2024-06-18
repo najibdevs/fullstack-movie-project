@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { BASE_URL } from '../utils';
 
 // Updated schema for movie booking
@@ -11,10 +12,9 @@ const schema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
     phone: z
         .string()
-        .min(10, { message: 'Phone number is required' })
-        .max(10, { message: 'Phone number cannot be more than 10 digits' }),
-    from: z.coerce.date({ required_error: 'Booking from is required' }),
-    to: z.coerce.date({ required_error: 'Booking to is required' }),
+        .length(10, { message: 'Phone number must be 10 digits' }),
+    from: z.string().transform((str) => new Date(str)),
+    to: z.string().transform((str) => new Date(str)),
     movie: z.string().min(1, { message: 'Movie title is required' }),
 });
 
@@ -31,7 +31,7 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
             phone: '',
             from: '',
             to: '',
-            movie: movieTitle, // Initialize with movie title
+            movie: movieTitle,
         },
     });
 
@@ -47,8 +47,8 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
                     phone: values.phone,
                     booking_from: values.from,
                     booking_to: values.to,
-                    movie_title: values.movie, // Adjust to movie title
-                    movie_id: id, // Add movie ID or any identifier
+                    movie_title: values.movie,
+                    movie_id: id,
                 }),
             });
 
@@ -94,7 +94,6 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
                                         placeholder="Name"
                                         {...field}
                                     />
-
                                     {fieldState.error && (
                                         <Form.Text className="text-danger">
                                             {fieldState.error.message}
@@ -115,7 +114,6 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
                                         placeholder="Phone number"
                                         {...field}
                                     />
-
                                     {fieldState.error && (
                                         <Form.Text className="text-danger">
                                             {fieldState.error.message}
@@ -136,7 +134,6 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
                                         placeholder="From"
                                         {...field}
                                     />
-
                                     {fieldState.error && (
                                         <Form.Text className="text-danger">
                                             {fieldState.error.message}
@@ -157,7 +154,6 @@ function BookMovie({ id, bookingFee, isBooked, movieTitle }) {
                                         placeholder="To"
                                         {...field}
                                     />
-
                                     {fieldState.error && (
                                         <Form.Text className="text-danger">
                                             {fieldState.error.message}

@@ -1,9 +1,35 @@
-# React + Vite
+# Movie App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview 
+The Movie app is designed to provide users with a platform to explore, discover, and enjoy movies. It offers a user-friendly interface built using modern technologies such as React with Vite for the frontend and Python FastAPI for the backend.
 
-Currently, two official plugins are available:
+## Features
+### Frontend
+- **Movie Catalogue:** Browse a diverse collection of movies with detailed descriptions, images, ratings, and genres.
+- **Movie Details:** View specific details of each movie, including cast, crew, release date, and related movies.
+- **Search and Filters:** Search for movies by title, genre, or any keyword. Filter movies based on various criteria.
+- **User Authentication:** Allow users to create accounts, log in, and maintain a personalized list of favorite movies.
+- **Watchlist:** Users can add movies to their watchlist for easy access and tracking.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-# fullstack-movie-project
+### Backend
+- **Movie Catalog Management:** Implement CRUD operations for managing movie data.
+- **User Management:** Handle user authentication, registration, and user-specific data like watchlists.
+- **Rating and Reviews:** Enable users to rate and review movies.
+- **API Security:** Implement CORS support for frontend integration and ensure secure API endpoints.
+- **Error Handling:** Utilize FastAPI's exception handling for clear and consistent error responses.
+
+## Technology Stack
+- **Frontend:** React.js with Vite, styled with React Bootstrap or similar.
+- **Backend:** Python FastAPI, ensuring efficient and scalable API endpoints.
+- **Database:** Integration with a suitable database (e.g., PostgreSQL, MongoDB) for persistent movie and user data storage.
+
+## Installation
+### Prerequisites
+- Node.js and npm
+- Python 3.8+
+
+### Setup Instructions
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/najibdevs-movie-app.git
+   cd-movie-app
