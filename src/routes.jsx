@@ -1,15 +1,14 @@
-import { createBrowserRouter } from 'react-router-dom';
-
+// routes.jsx
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import AddCatalogue from './pages/AddCatalogue';
+import AddMovie from './pages/AddMovie';
 
-export const router = createBrowserRouter([
-	{
-		path: '/',
-		element: <Home />,
-	},
-	{
-		path: '/add-catalogue',
-		element: <AddCatalogue />,
-	},
-]);
+const AppRoutes = () => (
+    <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/add-movie" element={<AddMovie />} /> {/* Correct path */}
+    </Routes>
+);
+
+export default AppRoutes;
