@@ -18,6 +18,9 @@ The Movie app is designed to provide users with a platform to explore, discover,
 - **API Security:** Implement CORS support for frontend integration and ensure secure API endpoints.
 - **Error Handling:** Utilize FastAPI's exception handling for clear and consistent error responses.
 
+### Backend Link
+https://github.com/najibdevs/backend
+
 ## Technology Stack
 - **Frontend:** React.js with Vite, styled with React Bootstrap or similar.
 - **Backend:** Python FastAPI, ensuring efficient and scalable API endpoints.
