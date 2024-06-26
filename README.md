@@ -3,9 +3,6 @@
 ## Overview 
 The Movie app is designed to provide users with a platform to explore, discover, and enjoy movies. It offers a user-friendly interface built using modern technologies such as React with Vite for the frontend and Python FastAPI for the backend.
 
-## Project Video
-https://www.loom.com/share/9694c5323a3c4736b22e00a1a9ec2d35?sid=e8204279-b91c-4eb8-8b6e-8f6114fd0cb5
-
 ## Features
 ### Frontend
 - **Movie Catalogue:** Browse a diverse collection of movies with detailed descriptions, images, ratings, and genres.
